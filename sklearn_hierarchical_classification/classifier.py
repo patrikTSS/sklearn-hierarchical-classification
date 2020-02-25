@@ -179,6 +179,7 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
         mlb=None,
         mlb_prediction_threshold=0.,
         use_decision_function=False,
+        force_all_finite=True
     ):
         self.base_estimator = base_estimator
         self.class_hierarchy = class_hierarchy
@@ -192,6 +193,7 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
         self.mlb = mlb
         self.mlb_prediction_threshold = mlb_prediction_threshold
         self.use_decision_function = use_decision_function
+        self.force_all_finite = force_all_finite
 
     def fit(self, X, y=None, sample_weight=None):
         """Fit underlying classifiers.
@@ -228,7 +230,7 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
             if len(X) != y.shape[0]:
                 raise ValueError("bad input shape: len(X) != y.shape[0]")
         else:
-            X, y = check_X_y(X, y, accept_sparse="csr")
+            X, y = check_X_y(X, y, accept_sparse="csr", force_all_finite=self.force_all_finite)
 
         check_classification_targets(y)
         if sample_weight is not None:
