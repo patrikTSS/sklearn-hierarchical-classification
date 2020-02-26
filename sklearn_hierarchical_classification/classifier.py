@@ -291,7 +291,7 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
         else:
             X = check_array(X, accept_sparse="csr")
 
-        y_pred = apply_along_rows(_classify, X=X)
+        y_pred = apply_along_rows(_classify, X=X, force_all_finite=self.force_all_finite)
         return y_pred
 
     def predict_proba(self, X):
@@ -321,7 +321,7 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
                 for i in range(len(X))
             ])
         else:
-            X = check_array(X, accept_sparse="csr")
+            X = check_array(X, accept_sparse="csr", force_all_finite=self.force_all_finite)
 
         y_pred = apply_along_rows(_classify, X=X)
         return y_pred
