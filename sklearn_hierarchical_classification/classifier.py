@@ -325,6 +325,38 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
 
         y_pred = apply_along_rows(_classify, X=X)
         return y_pred
+    
+    def predict_proba_with_path(self, X):
+        """
+        Return path and probability estimates for the test vector X.
+
+        Parameters
+        ----------
+        X : array-like, shape = [n_samples, n_features]
+
+        Returns
+        -------
+        C : array-like, shape = [n_samples, ], [n_samples, n_classes]
+            Returns the paths and the probability of the samples for each class in
+            the model. The columns correspond to the classes in sorted
+            order, as they appear in the attribute `classes_`.
+        """
+        check_is_fitted(self, "graph_")
+
+        def _classify(x):
+            path, scores = self._recursive_predict(x, root=self.root)
+            return path, scores
+
+        if self.feature_extraction == "raw":
+            return np.array([
+                _classify(X[i])
+                for i in range(len(X))
+            ])
+        else:
+            X = check_array(X, accept_sparse="csr", force_all_finite=self.force_all_finite)
+
+        y_pred = apply_along_rows(_classify, X=X)
+        return y_pred
 
     @property
     def n_classes_(self):
