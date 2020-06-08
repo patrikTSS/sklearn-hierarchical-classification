@@ -258,6 +258,8 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
         with self._progress(total=self.n_classes_ + 1, desc="Training base classifiers") as progress:
             self._recursive_train_local_classifiers(X, y, node_id=self.root, progress=progress)
 
+        self._delete_trainingsdata()
+        
         return self
 
     def predict(self, X):
@@ -365,6 +367,10 @@ class HierarchicalClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin)
     def _check_parameters(self):
         """Check the parameter assignment is valid and internally consistent."""
         validate_parameters(self)
+        
+    def _delete_trainingsdata(self):
+        for node in self.graph_.nodes.values():
+            node['X'] = None 
 
     def _recursive_build_features(self, X, y, node_id, progress):
         """
